@@ -1,0 +1,88 @@
+spring:
+  datasource:
+    #第一个数据源
+    username: root
+    password: mysql
+    #此处配置第一个数据源地址
+    url: jdbc:mysql://localhost2:3306/tianyou?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000 
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    #第二个数据源
+    secondary:
+      username: root
+      password: root、
+      #此处配置第二个数据源
+      url: jdbc:mysql://localhost:3306/tianyou?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
+      driver-class-name: com.mysql.jdbc.Driver
+      type: com.alibaba.druid.pool.DruidDataSource
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000 
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      poolPreparedStatements: true
+    
+    
+
+#   配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙  
+#    filters: stat,wall
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true  
+  redis:
+    database: 0
+#    host: 120.26.216.73
+    host: 127.0.0.1
+    port: 6379
+    password: 
+    timeout: 60000
+    jedis:
+      pool:
+        max-active: 200
+        max-idle: 8
+        max-wait: -1
+        min-idle: 0
+     
+          
+#    connectionProperties: druid.stat.slowSqlMillis=500
+
+#mybatis:
+#  config-location: classpath:mybatis/mybatis-config.xml
+  
+
+dubbo:
+  application:
+    name: personnel-management
+  registry:
+    address: zookeeper://127.0.0.1:2181
+  protocol:
+    name: dubbo
+    port: 20885
+  provider:
+    filter: validation
+    timeout: 6000
+    delay: -1
+    retires: 0
+server:
+  port: 8081
+  
+mapper:
+  mappers: com.cyjz.dao.base.IBaseMapper
+  not-empty: false
+  identity: MYSQL
+  
