@@ -12,81 +12,16 @@ SpringBoot配置多数据源druidDataSource完整解决方案
 
 
 1.数据源参数配置，username/password/url请改为自己的两个服务器的数据，此处偷了个懒，直接在spring.datasource后面加了个三级菜单来做第二个数据源数据"spring.datasource.secondary"
+参考项目src/main/resources/config/application.yml
 
-spring:
-  datasource:
-    #第一个数据源
-    username: root
-    password: mysql
-    #此处配置第一个数据源地址
-    url: jdbc:mysql://localhost2:3306/tianyou?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
-    driver-class-name: com.mysql.jdbc.Driver
-    type: com.alibaba.druid.pool.DruidDataSource
-    initialSize: 5
-    minIdle: 5
-    maxActive: 20
-    maxWait: 60000 
-    timeBetweenEvictionRunsMillis: 60000
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: SELECT 1 FROM DUAL
-    testWhileIdle: true
-    testOnBorrow: false
-    testOnReturn: false
-    poolPreparedStatements: true
-    #第二个数据源
-    secondary:
-      username: root
-      password: root、
-      #此处配置第二个数据源
-      url: jdbc:mysql://localhost:3306/tianyou?useUnicode=true&characterEncoding=utf-8&useSSL=false&allowMultiQueries=true
-      driver-class-name: com.mysql.jdbc.Driver
-      type: com.alibaba.druid.pool.DruidDataSource
-      initialSize: 5
-      minIdle: 5
-      maxActive: 20
-      maxWait: 60000 
-      timeBetweenEvictionRunsMillis: 60000
-      minEvictableIdleTimeMillis: 300000
-      validationQuery: SELECT 1 FROM DUAL
-      testWhileIdle: true
-      testOnBorrow: false
-      testOnReturn: false
-      poolPreparedStatements: true
-    
+2.配置两个独立的DataSource: DataSourceOneConfig,DataSourceTwoConfig  参考项目: src/main/java/com/cyjz/config下面的两个项目
 
-    maxPoolPreparedStatementPerConnectionSize: 20
-    useGlobalDataSourceStat: true  
-  redis:
-    database: 0
-    #host: 120.26.216.73
-    host: 127.0.0.1
-    port: 6379
-    password: 
-    timeout: 60000
-    jedis:
-      pool:
-        max-active: 200
-        max-idle: 8
-        max-wait: -1
-        min-idle: 0
-
-dubbo:
-  application:
-    name: personnel-management
-  registry:
-    address: zookeeper://127.0.0.1:2181
-  protocol:
-    name: dubbo
-    port: 20885
-  provider:
-    filter: validation
-    timeout: 6000
-    delay: -1
-    retires: 0
-server:
-  port: 8081
-  
-mapper:
-  mappers: com.cyjz.dao.base.IBaseMapper
-  not-empty: false
-  identity: MYSQL
+3.解释：注意MapperScan（非常重要）
+	（1）这里的配置了basePackages,这个参数表示扫描哪个包里面的dao层作为本数据源的dao
+	（2）sqlSessionTemplateRef,这个参数是引用下面的bean
+	（3）第一个DataSourceOneConfig这里的第一个bean这里加上@Primary注解，表示是主数据源也就是不需要带name可以直接访问到的
+	（4）在配置sqlSessionFactoryOne的时候，一定！一定！一定！要记得配置configLocation与mapperLocations(踩过的坑啊，辛酸泪啊！)
+	（5）configLocation配置的是mybatis的配置，此处配置了一个驼峰自动映射代码贴出来(如果想要可以加我qq，我想应该会吧，不会的话qq聊)
+	（6）mapperLocations这个是配置的本数据源的mybatis的xml文件的目录位置，两个数据源分别不同用于区分两个项目的mapper.xml文件
+	
+4.配置算是完了，只是可能还有细节没有描述清楚，具体不清楚的联系我吧
